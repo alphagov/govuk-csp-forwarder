@@ -35,7 +35,7 @@ node {
     // Start Build
     stage("Build") {
       dir(env.SRC_PATH) {
-        sh 'go build csp_forwarder.go -o $WORKSPACE/csp_forwarder'
+        sh 'go build -o $WORKSPACE/csp_forwarder csp_forwarder.go'
       }
     }
 
