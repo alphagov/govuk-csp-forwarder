@@ -36,7 +36,7 @@ node {
     stage("Build") {
       dir(env.SRC_PATH) {
         sh 'go build -o $WORKSPACE/csp_forwarder csp_forwarder.go'
-        sh 'zip csp_forwarder.zip csp_forwarder'
+        sh 'zip csp_forwarder.zip $WORKSPACE/csp_forwarder'
       }
     }
 
