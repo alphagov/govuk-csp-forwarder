@@ -36,7 +36,7 @@ node {
     stage("Build") {
       dir(env.SRC_PATH) {
         sh 'go build -o $WORKSPACE/csp_forwarder csp_forwarder.go'
-        sh 'zip csp_forwarder.zip $WORKSPACE/csp_forwarder'
+        sh 'zip $WORKSPACE/csp_forwarder.zip $WORKSPACE/csp_forwarder'
       }
     }
 
@@ -48,9 +48,9 @@ node {
     // Push the Go binary for the build to S3, for AWS releases
     if (env.BRANCH_NAME == "master") {
       stage("Push binary to S3") {
-        govuk.uploadArtefactToS3('csp_forwarder', "s3://govuk-integration-artefact/govuk-csp-forwarder/release/csp_forwarder.zip")
+        govuk.uploadArtefactToS3('csp_forwarder.zip', "s3://govuk-integration-artefact/govuk-csp-forwarder/release/csp_forwarder.zip")
         target_tag = "release_${env.BUILD_NUMBER}"
-        govuk.uploadArtefactToS3('csp_forwarder', "s3://govuk-integration-artefact/govuk-csp-forwarder/${target_tag}/csp_forwarder.zip")
+        govuk.uploadArtefactToS3('csp_forwarder.zip', "s3://govuk-integration-artefact/govuk-csp-forwarder/${target_tag}/csp_forwarder.zip")
       }
     }
 
