@@ -86,8 +86,11 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 }
 
 func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
-	// Ignore all schemes except HTTPS
-	schemeSafelist := map[string]bool{"https": true}
+	// Ignore all schemes except HTTPS and HTTP
+	schemeSafelist := map[string]bool{
+		"https": true,
+		"http":  true,
+	}
 
 	// Ignore host names that are not real host names
 	fakeHostnameBlocklist := map[string]bool{
