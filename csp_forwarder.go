@@ -2,13 +2,13 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
@@ -31,8 +31,19 @@ type ContentSecurityPolicyReport struct {
 }
 
 // HandleRequest is the AWS lambda handler function
-func HandleRequest(ctx context.Context, report ContentSecurityPolicyReportParent) (string, error) {
+func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	var reportForwarded = false
+	var report ContentSecurityPolicyReportParent
+
+	err := json.Unmarshal([]byte(request.Body), &report)
+
+	if err != nil {
+		return events.APIGatewayProxyResponse{
+			Headers:    map[string]string{"Content-Type": "application/json"},
+			Body:       fmt.Sprintf("{\"report_forwarded\": %s, \"error_message\": \"Error unmarshalling CSP report JSON to Struct\"}", strconv.FormatBool(reportForwarded)),
+			StatusCode: 400,
+		}, nil
+	}
 
 	if reportShouldBeForwarded(report.Report) {
 		var uri = "https://sentry.io/api/1377947/security/?sentry_key=f7898bf4858d436aa3568ae042371b94"
@@ -40,19 +51,31 @@ func HandleRequest(ctx context.Context, report ContentSecurityPolicyReportParent
 		reportString, err := json.Marshal(report)
 
 		if err != nil {
-			return "", fmt.Errorf("{\"report_forwarded\": %s, \"error_message\": \"Error marshalling CSP report JSON to String\"}", strconv.FormatBool(reportForwarded))
+			return events.APIGatewayProxyResponse{
+				Headers:    map[string]string{"Content-Type": "application/json"},
+				Body:       fmt.Sprintf("{\"report_forwarded\": %s, \"error_message\": \"Error marshalling CSP report JSON to String\"}", strconv.FormatBool(reportForwarded)),
+				StatusCode: 400,
+			}, nil
 		}
 
 		resp, err := http.Post(uri, "application/json", bytes.NewBuffer(reportString))
 
 		if resp.StatusCode != 200 || err != nil {
-			return "", fmt.Errorf("{\"report_forwarded\": %s, \"error_message\": \"Error sending CSP report to Sentry\"}", strconv.FormatBool(reportForwarded))
+			return events.APIGatewayProxyResponse{
+				Headers:    map[string]string{"Content-Type": "application/json"},
+				Body:       fmt.Sprintf("{\"report_forwarded\": %s, \"error_message\": \"Error sending CSP report to Sentry\"}", strconv.FormatBool(reportForwarded)),
+				StatusCode: 502,
+			}, nil
 		}
 
 		reportForwarded = true
 	}
 
-	return fmt.Sprintf("{\"report_forwarded\": %s}", strconv.FormatBool(reportForwarded)), nil
+	return events.APIGatewayProxyResponse{
+		Headers:    map[string]string{"Content-Type": "application/json"},
+		Body:       fmt.Sprintf("{\"report_forwarded\": %s}", strconv.FormatBool(reportForwarded)),
+		StatusCode: 200,
+	}, nil
 }
 
 func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
