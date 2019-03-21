@@ -86,9 +86,6 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 }
 
 func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
-	// Ignore all schemes except HTTPS
-	schemeSafelist := map[string]bool{"https": true}
-
 	// Ignore host names that are not real host names
 	fakeHostnameBlocklist := map[string]bool{
 		"about":  true,
@@ -123,8 +120,7 @@ func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
 		return false
 	}
 
-	if report.BlockedURI != "" && schemeSafelist[uri.Scheme] &&
-		!fakeHostnameBlocklist[report.BlockedURI] && !hostnameBlocklist[uri.Host] {
+	if report.BlockedURI != "" && !fakeHostnameBlocklist[report.BlockedURI] && !hostnameBlocklist[uri.Host] {
 		return true
 	}
 
