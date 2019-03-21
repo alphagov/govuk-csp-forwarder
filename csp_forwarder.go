@@ -30,7 +30,7 @@ type ContentSecurityPolicyReport struct {
 	Referrer           string `json:"referrer"`
 	ScriptSample       string `json:"script-sample,omitempty"`
 	SourceFile         string `json:"source-file,omitempty"`
-	StatusCode         string `json:"status-code"`
+	StatusCode         int    `json:"status-code"`
 	ViolatedDirective  string `json:"violated-directive"`
 }
 
