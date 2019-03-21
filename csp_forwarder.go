@@ -103,7 +103,7 @@ func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
 		return false
 	}
 
-	if schemeSafelist[uri.Scheme] && !hostnameBlocklist[uri.Host] {
+	if schemeSafelist[uri.Scheme] && !hostnameBlocklist[uri.Host] && uri.Host != "" {
 		return true
 	}
 
