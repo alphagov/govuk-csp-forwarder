@@ -83,8 +83,15 @@ func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
 	// Ignore all schemes except HTTPS
 	schemeSafelist := map[string]bool{"https": true}
 
+	// Ignore host names that are not real host names
+	fakeHostnameBlocklist := map[string]bool{
+		"about":  true,
+		"inline": true,
+	}
+
 	// Ignore host names for known browser extensions
 	hostnameBlocklist := map[string]bool{
+		"www.gstatic.com":        true,
 		"data1.klastaf.com":      true,
 		"data1.pictdog.com":      true,
 		"cardinaldata.net":       true,
@@ -96,6 +103,12 @@ func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
 		"mstat.acestream.net":    true,
 		"mc.yandex.ru":           true,
 		"block.opendns.com":      true,
+		"skytraf.xyz":            true,
+		"colextidapp.com":        true,
+		"mozbar.moz.com":         true,
+		"gjtrack.ucweb.com":      true,
+		"data1.plicifa.com":      true,
+		"data1.gribul.com":       true,
 	}
 
 	uri, err := url.Parse(report.BlockedURI)
@@ -104,7 +117,8 @@ func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
 		return false
 	}
 
-	if schemeSafelist[uri.Scheme] && !hostnameBlocklist[uri.Host] && uri.Host != "" {
+	if report.BlockedURI != "" && schemeSafelist[uri.Scheme] &&
+		!fakeHostnameBlocklist[report.BlockedURI] && !hostnameBlocklist[uri.Host] {
 		return true
 	}
 
