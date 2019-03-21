@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -62,9 +63,11 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 		// Sentry returns a 201 Created code if the report is successful
 		if resp.StatusCode != 201 || err != nil {
+			body, _ := ioutil.ReadAll(resp.Body)
+
 			return events.APIGatewayProxyResponse{
 				Headers:    map[string]string{"Content-Type": "application/json"},
-				Body:       fmt.Sprintf("{\"report_forwarded\": %s, \"error_message\": \"Error sending CSP report to Sentry\"}", strconv.FormatBool(reportForwarded)),
+				Body:       fmt.Sprintf("{\"report_forwarded\": %s, \"error_message\": \"Error sending CSP report to Sentry: %s\"}", strconv.FormatBool(reportForwarded), body),
 				StatusCode: 502,
 			}, nil
 		}
