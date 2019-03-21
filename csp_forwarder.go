@@ -21,12 +21,15 @@ type ContentSecurityPolicyReportParent struct {
 // ContentSecurityPolicyReport is the innards of the CSP report that we actully care about
 type ContentSecurityPolicyReport struct {
 	BlockedURI         string `json:"blocked-uri,omitempty"`
+	ColumnNumber       int64  `json:"column-number,omitempty"`
 	Disposition        string `json:"disposition,omitempty"`
 	DocumentURI        string `json:"document-uri,omitempty"`
 	EffectiveDirective string `json:"effective-directive,omitempty"`
+	LineNumber         int64  `json:"line-number,omitempty"`
 	OriginalPolicy     string `json:"original-policy,omitempty"`
 	Referrer           string `json:"referrer,omitempty"`
 	ScriptSample       string `json:"script-sample,omitempty"`
+	SourceFile         string `json:"source-file,omitempty"`
 	StatusCode         string `json:"status-code,omitempty"`
 	ViolatedDirective  string `json:"violated-directive,omitempty"`
 }
