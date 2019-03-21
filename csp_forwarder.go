@@ -67,7 +67,7 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 			return events.APIGatewayProxyResponse{
 				Headers:    map[string]string{"Content-Type": "application/json"},
-				Body:       fmt.Sprintf("{\"report_forwarded\": %s, \"error_message\": \"Error sending CSP report to Sentry\", \"sentry_error_message\": %s, \"csp_report_sent_to_sentry\": %s}", strconv.FormatBool(reportForwarded), body, reportString),
+				Body:       fmt.Sprintf("{\"report_forwarded\": %s, \"error_message\": \"Error sending CSP report to Sentry\", \"sentry_error_message\": %s, \"sentry_status_code\": %d, \"csp_report_sent_to_sentry\": %s}", strconv.FormatBool(reportForwarded), body, resp.StatusCode, reportString),
 				StatusCode: 502,
 			}, nil
 		}
