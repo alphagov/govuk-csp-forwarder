@@ -95,6 +95,8 @@ func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
 	// Ignore host names that are not real host names
 	fakeHostnameBlocklist := map[string]bool{
 		"about":  true,
+		"blob":   true,
+		"eval":   true,
 		"inline": true,
 	}
 
