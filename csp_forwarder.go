@@ -62,7 +62,12 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 			}, nil
 		}
 
-		resp, err := http.Post(uri, "application/json", bytes.NewBuffer(reportString))
+		client := &http.Client{}
+		req, _ := http.NewRequest("POST", uri, bytes.NewBuffer(reportString))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("User-Agent", request.Headers["User-Agent"])
+		req.Header.Set("X-Forwarder-User-Agent", "GOV.UK CSP Fowarder")
+		resp, err := client.Do(req)
 
 		// Sentry returns a 201 Created code if the report is successful
 		if resp.StatusCode != 201 || err != nil {
