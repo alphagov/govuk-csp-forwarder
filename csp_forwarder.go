@@ -105,40 +105,13 @@ func reportShouldBeForwarded(report ContentSecurityPolicyReport) bool {
 		"inline": true,
 	}
 
-	// Ignore host names for known browser extensions
-	hostnameBlocklist := map[string]bool{
-		"www.gstatic.com":                true,
-		"data1.klastaf.com":              true,
-		"data1.pictdog.com":              true,
-		"cardinaldata.net":               true,
-		"promclickapp.biz":               true,
-		"gateway.zscalertwo.net":         true,
-		"lowffdompro.com":                true,
-		"data1.biilut.com":               true,
-		"data1.bmi-result.com":           true,
-		"mstat.acestream.net":            true,
-		"mc.yandex.ru":                   true,
-		"block.opendns.com":              true,
-		"skytraf.xyz":                    true,
-		"colextidapp.com":                true,
-		"mozbar.moz.com":                 true,
-		"gjtrack.ucweb.com":              true,
-		"data1.plicifa.com":              true,
-		"data1.gribul.com":               true,
-		"data1.my-drivingdirections.com": true,
-		"data1.myloap.com":               true,
-		"api.microsofttranslator.com":    true,
-		"ssl.microsofttranslator.com":    true,
-	}
-
 	uri, err := url.Parse(report.BlockedURI)
 
 	if err != nil {
 		return false
 	}
 
-	if report.BlockedURI != "" && schemeSafelist[uri.Scheme] &&
-		!fakeHostnameBlocklist[report.BlockedURI] && !hostnameBlocklist[uri.Host] {
+	if report.BlockedURI != "" && schemeSafelist[uri.Scheme] && !fakeHostnameBlocklist[report.BlockedURI] {
 		return true
 	}
 
