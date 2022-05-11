@@ -46,7 +46,7 @@ node {
     }
 
     // Push the Go binary for the build to S3, for AWS releases
-    if (env.BRANCH_NAME == "master") {
+    if (env.BRANCH_NAME == "main") {
       stage("Push binary to S3") {
         govuk.uploadArtefactToS3('csp_forwarder.zip', "s3://govuk-integration-artefact/govuk-csp-forwarder/release/csp_forwarder.zip")
         target_tag = "release_${env.BUILD_NUMBER}"
@@ -54,7 +54,7 @@ node {
       }
     }
 
-    if (env.BRANCH_NAME == "master") {
+    if (env.BRANCH_NAME == "main") {
       stage("Push release tag") {
         govuk.pushTag('govuk-csp-forwarder', env.BRANCH_NAME, 'release_' + env.BUILD_NUMBER)
       }
